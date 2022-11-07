@@ -48,8 +48,6 @@ function createRow(start_black:boolean): BoardRow{
 
 
 function fillRow(occupied:boolean, color: Colors, row: BoardRow): BoardRow{
-  // what the fuck was happening here?
-  // let new_row = row
   let new_row = structuredClone(row)
   for(let k=0; k<=7; k++){
     if(occupied === true){
@@ -96,21 +94,18 @@ let full_board: CheckersBoard = createBoard(empty_board)
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-          I made this variable: {new_var}
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header>
+        <h2> Welcome to Typescript Checkers!</h2>
       </header>
+      <body>
+        <table>
+          <tbody key='tbody'>
+        {
+        full_board.rows.map((index, val) => <tr key={val}><td className="checker-cell-red"> </td> <td className="checker-cell-black"> </td></tr>)
+        }
+          </tbody>
+        </table>
+      </body>
     </div>
   );
 }

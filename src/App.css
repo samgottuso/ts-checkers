@@ -36,3 +36,23 @@
     transform: rotate(360deg);
   }
 }
+
+table {
+  border: 1px solid;
+}
+
+.checker-cell-red {
+  background-color: red;
+  width: 10px;
+  height: 10px;
+
+}
+
+.checker-cell-black {
+  background-color: black;
+  width: 10px;
+  height: 10px;
+
+}
+
+
