@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -14,6 +14,7 @@ interface CheckersPiece {
 }
 
 interface BoardRow {
+  row_number: Number
   spaces: Array<BoardSpace>
 }
 
@@ -32,8 +33,8 @@ interface CheckersBoard {
   rows:  Array<BoardRow>
 } 
 
-function createRow(start_black:boolean): BoardRow{
-  let row: BoardRow = {'spaces': []}
+function createRow(start_black:boolean, row_number: number): BoardRow{
+  let row: BoardRow = {'spaces': [], 'row_number': row_number}
   for(let j=0; j<=7; j++){
       if (start_black === true) {
         row['spaces'][j] = emptyBlackSpace
@@ -65,7 +66,7 @@ function createBoard(new_board: CheckersBoard): CheckersBoard{
   let start_black = true;
   let start_occupied = true;
   for (let i= 0; i < 8; i++) {
-      let starting_row = createRow(start_black);
+      let starting_row = createRow(start_black, i);
     if (occupied_rows.indexOf(i) >= 0 && i <= 3){
       // red half of board
       new_board['rows'][i] = fillRow(start_occupied, Colors.Red, starting_row) 
@@ -85,7 +86,36 @@ function createBoard(new_board: CheckersBoard): CheckersBoard{
 
   return new_board
 }
-  
+
+function renderFECell(space: BoardSpace): JSX.Element {
+  if (space.color === 0){
+    return <td className="checker-cell-red"> </td> 
+  }
+  else if (space.color === 1){
+    return <td className="checker-cell-black"> </td> 
+  }
+  else{
+    return <td></td>
+  }
+}
+
+function renderFERow(index: string, row: BoardRow): JSX.Element {
+  return(
+      <tr key={index}> 
+      {row.spaces.map((renderFECell))} 
+      </tr>
+
+  )
+}
+
+function renderFEBoard(board: CheckersBoard): JSX.Element {
+  return (
+    <tbody key='boardbody'>
+      {board.rows.map(row => renderFERow(row.row_number.toString(), row))}
+    </tbody>
+    )
+}
+
 let empty_board: CheckersBoard = {'rows': []}
 
 let full_board: CheckersBoard = createBoard(empty_board)
@@ -97,15 +127,11 @@ function App() {
       <header>
         <h2> Welcome to Typescript Checkers!</h2>
       </header>
-      <body>
+      <div>
         <table>
-          <tbody key='tbody'>
-        {
-        full_board.rows.map((index, val) => <tr key={val}><td className="checker-cell-red"> </td> <td className="checker-cell-black"> </td></tr>)
-        }
-          </tbody>
+          {renderFEBoard(full_board)}
         </table>
-      </body>
+      </div>
     </div>
   );
 }
