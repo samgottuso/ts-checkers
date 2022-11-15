@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import red_piece from './red_check.png'
+import white_piece from './white_check.png'
 
 enum Colors {
   Red,
-  Black
+  Black,
+  White
 }
 
 interface CheckersPiece {
@@ -73,8 +76,8 @@ function createBoard(new_board: CheckersBoard): CheckersBoard{
       start_occupied = !start_occupied
     }
      else if (occupied_rows.indexOf(i) >= 0 && i > 4){
-      // black half of board
-      new_board['rows'][i] = fillRow(start_occupied, Colors.Black, starting_row)
+      // white half of board
+      new_board['rows'][i] = fillRow(start_occupied, Colors.White, starting_row)
       start_occupied = !start_occupied
 
     } else{
@@ -88,15 +91,28 @@ function createBoard(new_board: CheckersBoard): CheckersBoard{
 }
 
 function renderFECell(space: BoardSpace): JSX.Element {
+  let space_color: string
+  let piece: string
   if (space.color === 0){
-    return <td className="checker-cell-red"> </td> 
+    space_color = "checker-cell-red"
   }
   else if (space.color === 1){
-    return <td className="checker-cell-black"> </td> 
+    space_color = "checker-cell-black"
   }
   else{
     return <td></td>
   }
+  if (space.occupied){
+    if (space.piece != undefined && space.piece.color == 0){
+      piece = red_piece
+    }else{
+      piece = white_piece
+    }
+  } else{
+    piece = ""
+  }
+  let fe_space= <td className={space_color}> <img src={piece} alt="" /> </td>
+  return fe_space
 }
 
 function renderFERow(index: string, row: BoardRow): JSX.Element {
@@ -127,7 +143,7 @@ function App() {
       <header>
         <h2> Welcome to Typescript Checkers!</h2>
       </header>
-      <div>
+      <div className='Board'>
         <table>
           {renderFEBoard(full_board)}
         </table>
