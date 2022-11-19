@@ -49,15 +49,22 @@ table {
 
 .checker-cell-red {
   background-color: red;
-  width: 100px;
-  height: 85px;
+  width: 75px;
+  height: 64px;
 
 }
 
 .checker-cell-black {
   background-color: black;
-  width: 100px;
-  height: 85px;
+  width: 75px;
+  height: 64px;
+
+}
+
+.checker-cell-orange {
+  background-color: orange;
+  width: 75px;
+  height: 64px;
 
 }
 

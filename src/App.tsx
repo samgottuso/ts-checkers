@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import red_piece from './red_check.png'
-import white_piece from './white_check.png'
 
-enum Colors {
+import { StartButton, renderFEBoard } from "./web_components"
+import { start } from 'repl';
+
+
+enum Colors { 
   Red,
   Black,
-  White
+  White,
+  Orange
 }
 
 interface CheckersPiece {
@@ -16,23 +19,21 @@ interface CheckersPiece {
 
 }
 
-interface BoardRow {
-  row_number: Number
+export interface BoardRow {
+  row_number: number
   spaces: Array<BoardSpace>
 }
 
-interface BoardSpace {
+export interface BoardSpace {
   color: Colors
   occupied: boolean
   piece?: CheckersPiece
+  row_number: number
+  space_number: number
 
 }
 
-const emptyBlackSpace: BoardSpace = {color: Colors.Black, occupied: false}
-
-const emptyRedSpace: BoardSpace = {color: Colors.Red, occupied: false}
-
-interface CheckersBoard {
+export interface CheckersBoard {
   rows:  Array<BoardRow>
 } 
 
@@ -40,10 +41,12 @@ function createRow(start_black:boolean, row_number: number): BoardRow{
   let row: BoardRow = {'spaces': [], 'row_number': row_number}
   for(let j=0; j<=7; j++){
       if (start_black === true) {
-        row['spaces'][j] = emptyBlackSpace
+        let new_space: BoardSpace = {color: Colors.Black, occupied: false, row_number: row_number, space_number: j}
+        row['spaces'][j] = new_space
       }
       else if (start_black === false) {
-        row['spaces'][j] = emptyRedSpace
+        let new_space: BoardSpace = {color: Colors.Red, occupied: false, row_number: row_number, space_number: j}
+        row['spaces'][j] = new_space
       }
     start_black = !start_black
   }
@@ -90,51 +93,49 @@ function createBoard(new_board: CheckersBoard): CheckersBoard{
   return new_board
 }
 
-function renderFECell(space: BoardSpace): JSX.Element {
-  let space_color: string
-  let piece: string
-  if (space.color === 0){
-    space_color = "checker-cell-red"
-  }
-  else if (space.color === 1){
-    space_color = "checker-cell-black"
-  }
-  else{
-    return <td></td>
-  }
-  if (space.occupied){
-    if (space.piece != undefined && space.piece.color == 0){
-      piece = red_piece
-    }else{
-      piece = white_piece
-    }
-  } else{
-    piece = ""
-  }
-  let fe_space= <td className={space_color}> <img src={piece} alt="" /> </td>
-  return fe_space
-}
-
-function renderFERow(index: string, row: BoardRow): JSX.Element {
-  return(
-      <tr key={index}> 
-      {row.spaces.map((renderFECell))} 
-      </tr>
-
-  )
-}
-
-function renderFEBoard(board: CheckersBoard): JSX.Element {
-  return (
-    <tbody key='boardbody'>
-      {board.rows.map(row => renderFERow(row.row_number.toString(), row))}
-    </tbody>
-    )
-}
-
 let empty_board: CheckersBoard = {'rows': []}
 
 let full_board: CheckersBoard = createBoard(empty_board)
+
+export type GameProps = {
+  started: boolean;
+  active_player: string;
+  backend_board: CheckersBoard
+}
+
+let active_props: GameProps = {started: false, active_player:'', backend_board: full_board}
+
+export type FullBoardProps = {
+  active_board: CheckersBoard
+  refresh: boolean
+}
+
+export function highlightValidMoves(board: CheckersBoard, active_space: BoardSpace): CheckersBoard{
+  let new_board: CheckersBoard = structuredClone(board)
+  let valid_rows: Array<number> = [active_space.row_number + 1, active_space.row_number -1]
+  let valid_spaces: Array<number> = [active_space.space_number + 1, active_space.space_number - 1]
+  for(let r=0; r<2; r++){
+    let valid_row: number = valid_rows[r]
+    if(valid_row > 7 || valid_row < 0){
+      return new_board
+    }
+    for(let s=0; s<2; s++){
+      if(valid_spaces[s] > 7 || valid_spaces[s] < 0){
+        continue;
+      }
+      let potential_valid: BoardSpace = new_board.rows[valid_row].spaces[valid_spaces[s]]
+      if (potential_valid.occupied !== undefined && potential_valid.occupied === false){
+        potential_valid.color = Colors.Orange
+        console.log('Valid spot!')
+        console.log(potential_valid.row_number, potential_valid.space_number)
+      }
+    }
+  }
+  return new_board
+}
+
+
+let starting_props: FullBoardProps = {'active_board': full_board, 'refresh': true}
 
 
 function App() {
@@ -143,9 +144,12 @@ function App() {
       <header>
         <h2> Welcome to Typescript Checkers!</h2>
       </header>
+      <div className='PlayersTurn'>
+        { StartButton(active_props) }
+      </div>
       <div className='Board'>
         <table>
-          {renderFEBoard(full_board)}
+          { renderFEBoard(starting_props.active_board) }
         </table>
       </div>
     </div>
