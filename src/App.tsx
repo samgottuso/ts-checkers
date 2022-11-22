@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { StartButton, renderFEBoard } from "./web_components"
+import { StartButton, FECheckersBoard } from "./web_components"
 import { start } from 'repl';
 
 
@@ -148,9 +148,9 @@ function App() {
         { StartButton(active_props) }
       </div>
       <div className='Board'>
-        <table>
-          { renderFEBoard(starting_props.active_board) }
-        </table>
+        <>
+          { FECheckersBoard }
+        </>
       </div>
     </div>
   );

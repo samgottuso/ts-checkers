@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import { render } from '@testing-library/react';
+import React, {ReactNode, useState} from 'react';
 import { isContext } from 'vm';
 import { GameProps, BoardSpace, BoardRow, CheckersBoard, highlightValidMoves, FullBoardProps  } from './App'
 
@@ -66,10 +67,22 @@ function renderFERow(index: string, row: BoardRow, board:CheckersBoard): JSX.Ele
   }
 
   
-export function renderFEBoard(board: CheckersBoard): JSX.Element {
+ function renderFEBoard(board: CheckersBoard): JSX.Element {
     return (
+      <table>
       <tbody key='boardbody'>
         {board.rows.map(row => renderFERow(row.row_number.toString(), row, board))}
       </tbody>
+      </table>
       )
+  }
+
+  export class FECheckersBoard extends React.Component<GameProps> {
+    render() {
+      return(
+      <>
+        { renderFEBoard(this.props.backend_board) }
+      </>
+      )
+    }
   }
